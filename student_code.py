@@ -129,6 +129,68 @@ class KnowledgeBase(object):
         ####################################################
         # Implementation goes here
         # Not required for the extra credit assignment
+    def return_string(self, fact_or_rule, indentation):
+
+        if isinstance(fact_or_rule, Fact):
+
+            if fact_or_rule in self.facts:
+                fact_or_rule = self._get_fact(fact_or_rule)
+                string = indentation
+                string += fact_or_rule.name + ": "
+                string += str(fact_or_rule.statement)
+                if fact_or_rule.asserted:
+                    string += " ASSERTED"
+                string += "\n"
+
+                if fact_or_rule.supported_by:
+
+                    for supports in fact_or_rule.supported_by:
+                        string += indentation + "  " + "SUPPORTED BY" + "\n"
+                        for item in supports:
+                            string2 = self.return_string(item, indentation + "    ")
+                            if string2:
+                                string += string2
+                return string
+            else:
+                if indentation == "":
+                    return "Fact is not in the KB"
+                else:
+                    return False
+
+        elif isinstance(fact_or_rule, Rule):
+
+            if fact_or_rule in self.rules:
+                fact_or_rule = self._get_rule(fact_or_rule)
+                string = indentation
+                string += fact_or_rule.name + ": " + "("
+                for i in range(0, len(fact_or_rule.lhs)):
+                    string3 = str(fact_or_rule.lhs[i])
+                    string += string3
+                    if i != len(fact_or_rule.lhs)-1:
+                        string += ", "
+                string += ")"
+                string += " " + "->" + " "
+                string += str(fact_or_rule.rhs)
+
+                if fact_or_rule.asserted:
+                    string += " ASSERTED"
+                string += "\n"
+                if fact_or_rule.supported_by:
+                    string += indentation + "  " + "SUPPORTED BY" + "\n"
+                    for supports in fact_or_rule.supported_by:
+                        for item in supports:
+                            string2 = self.return_string(item, indentation + "    ")
+                            if string2:
+                                string += string2
+                return string
+            else:
+                if indentation == "":
+                    return "Rule is not in the KB"
+                else:
+                    return False
+
+        else:
+            return False
 
     def kb_explain(self, fact_or_rule):
         """
@@ -142,7 +204,9 @@ class KnowledgeBase(object):
         """
         ####################################################
         # Student code goes here
-
+        string = self.return_string(fact_or_rule, "")
+        print(string)
+        return string
 
 class InferenceEngine(object):
     def fc_infer(self, fact, rule, kb):
